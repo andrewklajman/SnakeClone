@@ -1,25 +1,40 @@
 import pygame
+import random
 
-FPS = 5
-BOARD_SIZE = 71
+## !!!!!!!!!!!!!!!! Initial Parameters !!!!!!!!!!!!!!!! 
+FPS = 10
+BOARD_SIZE = 30
 SQUARE_SIZE = 10
-DIRECTION = 'UP'
-
-BLACK = (0,0,0)
 WHITE = (255,255,255)
-RED = (255,0,0)
+RED = (128,0,0)
+GREEN = (0,255,0)
 
-pygame.quit()
+## !!!!!!!!!!!!!!!! Functions !!!!!!!!!!!!!!!! 
+def drawSnake():        [pygame.draw.rect(gd, RED, (block[0]*SQUARE_SIZE,block[1]*SQUARE_SIZE,SQUARE_SIZE,SQUARE_SIZE)) for block in SNAKE]
+def drawApple():        pygame.draw.rect(gd, GREEN, (APPLE[0]*SQUARE_SIZE,APPLE[1]*SQUARE_SIZE,SQUARE_SIZE,SQUARE_SIZE))
+def boundaryHit():      return not(0<= SNAKE[0][0] <= BOARD_SIZE - 1) or not(0<= SNAKE[0][1] <= BOARD_SIZE - 1) or (SNAKE[0] in SNAKE[1:])
+def updateSnakeHead():  ## Update the snake head to its new position (because it moves or eats an apple)
+    if DIRECTION == 'UP': SNAKE.insert(0,(SNAKE[0][0],SNAKE[0][1] - 1))
+    elif DIRECTION == 'DOWN': SNAKE.insert(0,(SNAKE[0][0],SNAKE[0][1] + 1))
+    elif DIRECTION == 'LEFT': SNAKE.insert(0,(SNAKE[0][0] - 1,SNAKE[0][1]))
+    elif DIRECTION == 'RIGHT': SNAKE.insert(0,(SNAKE[0][0] + 1,SNAKE[0][1]))
+def resetGame():        ## Set the Snake, Apple and direction back to its initial values (random singular places)
+    global SNAKE, APPLE, DIRECTION
+    SNAKE = [(random.randint(0,BOARD_SIZE),random.randint(0,BOARD_SIZE))]
+    APPLE = (random.randint(0,BOARD_SIZE),random.randint(0,BOARD_SIZE))
+    DIRECTION = 'UP'
+def moveSnake():        ## Set the new snakes heads position and get rid of the last part of the tail
+    updateSnakeHead()
+    SNAKE.pop()
+
+## !!!!!!!!!!!!!!!! Main Program !!!!!!!!!!!!!!!! 
 pygame.init()
 gd = pygame.display.set_mode((BOARD_SIZE*SQUARE_SIZE,BOARD_SIZE*SQUARE_SIZE))
 clock = pygame.time.Clock()
 
-def drawBlock(pos):
-    pygame.draw.rect(gd, RED, (pos[0]*SQUARE_SIZE,pos[1]*SQUARE_SIZE,SQUARE_SIZE,SQUARE_SIZE))
-
-head = (int(BOARD_SIZE/2),int(BOARD_SIZE/2))
-
+resetGame()
 while True:
+##  Get user input
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
@@ -28,15 +43,19 @@ while True:
             elif event.key == pygame.K_DOWN: DIRECTION = 'DOWN'
             elif event.key == pygame.K_RIGHT: DIRECTION = 'RIGHT'
             elif event.key == pygame.K_LEFT: DIRECTION = 'LEFT'
-
-    if DIRECTION == 'UP': head = (head[0],head[1] - 1)
-    elif DIRECTION == 'DOWN': head = (head[0],head[1] + 1)
-    elif DIRECTION == 'LEFT': head = (head[0] - 1,head[1])
-    elif DIRECTION == 'RIGHT': head = (head[0] + 1,head[1])
-
-    print(head)
-
+    moveSnake()                     ## Move the snake
+    if SNAKE[0]==APPLE:             ## If the snakes head is on the apple then consider it eaten (and thus the snake grows)
+        updateSnakeHead()
+        APPLE = (random.randint(0,BOARD_SIZE - 1),random.randint(0,BOARD_SIZE - 1))
+    if boundaryHit(): resetGame()   ## Reset the game if the snake goes outside the boundary or tries to eat itself
+##  Draw elements onto the surface
     gd.fill(WHITE)
-    drawBlock(head)
+    drawApple()
+    drawSnake()
+##  Set surface to screen and tick
     pygame.display.update()
     clock.tick(FPS)
+
+
+    
+    
