@@ -14,10 +14,10 @@ def drawSnake():        [pygame.draw.rect(gd, RED, (block[0]*SQUARE_SIZE,block[1
 def drawApple():        pygame.draw.rect(gd, GREEN, (APPLE[0]*SQUARE_SIZE,APPLE[1]*SQUARE_SIZE,SQUARE_SIZE,SQUARE_SIZE))
 def boundaryHit():      return not(0<= SNAKE[0][0] <= BOARD_SIZE - 1) or not(0<= SNAKE[0][1] <= BOARD_SIZE - 1) or (SNAKE[0] in SNAKE[1:])
 def updateSnakeHead():  ## Update the snake head to its new position (because it moves or eats an apple)
-    if DIRECTION == 'UP': SNAKE.insert(0,(SNAKE[0][0],SNAKE[0][1] - 1))
-    elif DIRECTION == 'DOWN': SNAKE.insert(0,(SNAKE[0][0],SNAKE[0][1] + 1))
-    elif DIRECTION == 'LEFT': SNAKE.insert(0,(SNAKE[0][0] - 1,SNAKE[0][1]))
-    elif DIRECTION == 'RIGHT': SNAKE.insert(0,(SNAKE[0][0] + 1,SNAKE[0][1]))
+    if      DIRECTION == 'UP':      SNAKE.insert(0,(SNAKE[0][0],SNAKE[0][1] - 1))
+    elif    DIRECTION == 'DOWN':    SNAKE.insert(0,(SNAKE[0][0],SNAKE[0][1] + 1))
+    elif    DIRECTION == 'LEFT':    SNAKE.insert(0,(SNAKE[0][0] - 1,SNAKE[0][1]))
+    elif    DIRECTION == 'RIGHT':   SNAKE.insert(0,(SNAKE[0][0] + 1,SNAKE[0][1]))
 def resetGame():        ## Set the Snake, Apple and direction back to its initial values (random singular places)
     global SNAKE, APPLE, DIRECTION
     SNAKE = [(random.randint(0,BOARD_SIZE),random.randint(0,BOARD_SIZE))]
@@ -39,10 +39,10 @@ while True:
         if event.type == pygame.QUIT:
             pygame.quit()
         if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_UP: DIRECTION = 'UP'
-            elif event.key == pygame.K_DOWN: DIRECTION = 'DOWN'
-            elif event.key == pygame.K_RIGHT: DIRECTION = 'RIGHT'
-            elif event.key == pygame.K_LEFT: DIRECTION = 'LEFT'
+            if      event.key == pygame.K_UP    and DIRECTION != 'DOWN':    DIRECTION = 'UP'
+            elif    event.key == pygame.K_DOWN  and DIRECTION != 'UP':      DIRECTION = 'DOWN'
+            elif    event.key == pygame.K_RIGHT and DIRECTION != 'LEFT':    DIRECTION = 'RIGHT'
+            elif    event.key == pygame.K_LEFT  and DIRECTION != 'RIGHT':   DIRECTION = 'LEFT'
     moveSnake()                     ## Move the snake
     if SNAKE[0]==APPLE:             ## If the snakes head is on the apple then consider it eaten (and thus the snake grows)
         updateSnakeHead()
